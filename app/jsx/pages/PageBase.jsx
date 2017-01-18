@@ -16,24 +16,26 @@ class PageBase extends React.Component
       pageData: null,
       admin: this.getAdminData()
     }
+  }
 
-    let dataURL = this.pageDataURL(props)
-    if (dataURL) 
+  componentDidMount() {
+    let dataURL = this.pageDataURL(this.props)
+    if (dataURL)
     {
       // Phase 1: Initial server-side load. We just save the URL, and iso will later fetch it and re-run React
-      if (props.location.urlsToFetch)
-          props.location.urlsToFetch.push(dataURL)
-      // Phase 2: Second server-side load, where our data has been fetched and stored in props.location
-      else if (props.location.urlsFetched)
-        this.state.pageData = props.location.urlsFetched[this.pageDataURL(props)]
+      if (this.props.location.urlsToFetch)
+          this.props.location.urlsToFetch.push(dataURL)
+      // Phase 2: Second server-side load, where our data has been fetched and stored in this.props.location
+      else if (this.props.location.urlsFetched)
+        this.setState({pageData: this.props.location.urlsFetched[this.pageDataURL(this.props)]})
       // Phase 3: Initial browser load. Server should have placed our data in window.
       else if (window.jscholApp_initialPageData) {
-        this.state.pageData = window.jscholApp_initialPageData
+        this.setState({pageData: window.jscholApp_initialPageData})
         delete window.jscholApp_initialPageData
       }
       // Phase 4: Browser-side page switch. We have to fetch new data ourselves.
       else
-        this.fetchState(props)
+        this.fetchState(this.props)
     }
   }
 
